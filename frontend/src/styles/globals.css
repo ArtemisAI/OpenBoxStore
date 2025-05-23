@@ -1,0 +1,5 @@
+ /* Global styles for The Open Box marketplace */
+ /* TODO: Add Tailwind directives or custom CSS */
+ @tailwind base;
+ @tailwind components;
+ @tailwind utilities;

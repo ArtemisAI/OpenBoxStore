@@ -1,0 +1,30 @@
+ # Node.js dependencies
+ node_modules/
+ # Next.js build output
+ .next/
+ out/
+ # Production build
+ dist/
+ # Environment variables
+ .env
+ .env.local
+ .env.*.local
+ # Log files
+ npm-debug.log*
+ yarn-debug.log*
+ # Editor directories
+ .vscode/
+ # Python cache
+ __pycache__/
+ *.py[cod]
+ # Terraform files
+ *.tfstate
+ *.tfstate.*
+ .terraform/
+ # Kubernetes
+ *.kube/
+ # Docker
+ docker-compose.override.yml
+ # macOS files
+ .DS_Store
+ # TODO: Review and adjust ignore patterns as needed

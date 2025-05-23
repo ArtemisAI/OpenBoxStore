@@ -1,0 +1,7 @@
+ # Python dependencies for AI service
+ fastapi
+ uvicorn[standard]
+ langchain
+ openai
+ chromadb
+ # TODO: Pin versions and add any additional libraries
