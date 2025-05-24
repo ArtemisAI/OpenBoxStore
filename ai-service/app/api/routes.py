@@ -6,4 +6,4 @@
  @router.post("/chat")
  async def chat_endpoint(payload: dict):
      # TODO: Implement chat endpoint using RAG and negotiation logic
-     return {"response": "TODO"}
+     return {"response": "Hello from the AI Service chat endpoint!"}
