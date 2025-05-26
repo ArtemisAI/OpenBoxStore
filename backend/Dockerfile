@@ -6,10 +6,19 @@
  
  # Install dependencies
  COPY package.json package-lock.json* ./
- RUN npm install
+# NPM ci installs from package-lock.json and is generally faster and more reliable for builds.
+# Ensure devDependencies are installed as they are needed for the build.
+RUN npm ci
  
- # Copy source code
- COPY . .
+ # Copy tsconfig and source code
+COPY tsconfig.json ./
+COPY src ./src
  
- # TODO: Adjust build steps if using TypeScript or Medusa
+ # Build the TypeScript application
+RUN npm run build
+ 
+ # Prune devDependencies for a smaller image
+RUN npm prune --production
+ 
+ # The CMD should remain the same, as "npm start" will execute "node dist/index.js"
  CMD ["npm", "start"]

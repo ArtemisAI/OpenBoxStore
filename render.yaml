@@ -1,0 +1,141 @@
+# render.yaml
+# This file defines the services for the OpenBox application on Render.
+
+services:
+  # 1. PostgreSQL Database
+  - type: psql
+    name: main-db
+    plan: starter
+    postgresMajorVersion: 15
+    region: oregon
+
+  # 2. AI Service (Web Service)
+  - type: web
+    name: ai-service
+    region: oregon
+    runtime: docker
+    dockerfilePath: ./ai-service/Dockerfile
+    dockerContext: ./ai-service
+    plan: starter # Or a more appropriate plan based on resource needs
+    healthCheckPath: /healthz
+    envVars:
+      - key: OPENAI_API_KEY
+        value: your_openai_api_key_here # Replace with actual key or use Render's secret management
+      - key: VECTOR_DB_URL
+        value: http://chromadb-service:8000 # Internal Render service address
+      - key: PORT
+        value: 8000 # Port ai-service listens on internally
+
+  # 3. Backend Service (Web Service)
+  - type: web
+    name: backend-service
+    region: oregon
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    plan: starter
+    healthCheckPath: /healthz
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: main-db
+          property: connectionString
+      - key: JWT_SECRET
+        value: a_secure_jwt_secret_for_render_change_this # Replace with a strong secret
+      - key: STRIPE_SECRET_KEY
+        value: your_stripe_secret_key_here # Replace with actual key or use Render's secret management
+      - key: PORT
+        value: 3000 # Port backend-service listens on internally
+      - key: NODE_ENV
+        value: production
+
+  # 4. Frontend Service (Web Service)
+  - type: web
+    name: frontend-service
+    region: oregon
+    runtime: docker
+    dockerfilePath: ./frontend/Dockerfile
+    dockerContext: ./frontend
+    plan: starter
+    healthCheckPath: /api/healthz
+    envVars:
+      - key: NEXT_PUBLIC_API_URL
+        value: https://${backend-service.onrender.com} # Render provides this URL
+      - key: NEXT_PUBLIC_STRIPE_KEY
+        value: your_stripe_public_key_here # Replace with actual public key
+      - key: PORT
+        value: 3000 # Port frontend-service listens on internally
+      - key: NODE_ENV
+        value: production
+      # For Next.js 13+ with app router, if running in standalone output mode,
+      # HOSTNAME might be needed if default (0.0.0.0) causes issues with Render's proxy.
+      # - key: HOSTNAME
+      #   value: "0.0.0.0"
+
+  # 5. ChromaDB Service (Private Service)
+  - type: pvt
+    name: chromadb-service
+    region: oregon
+    runtime: docker
+    dockerCommand: chromadb/chroma # Using the image name as specified
+    plan: starter # Adjust based on expected data size and usage
+    ports:
+      - "8000:8000" # Expose ChromaDB's default port
+    disk:
+      name: chromadata
+      mountPath: /chroma_data # Default path used by ChromaDB for persistence
+      sizeGB: 10
+
+  # 6. Ollama Service (Private Service)
+  - type: pvt
+    name: ollama-service
+    region: oregon
+    runtime: docker
+    dockerCommand: ollama/ollama # Using the image name as specified
+    plan: starter # Ollama can be resource-intensive; monitor and upgrade plan if needed
+                  # Consider plans with more RAM/CPU for better performance
+    ports:
+      - "11434:11434" # Default Ollama port
+    disk:
+      name: ollamadata
+      mountPath: /root/.ollama # Default path for Ollama models
+      sizeGB: 20 # Adjust based on the number and size of models you plan to use
+
+  # 7. n8n Service (Private Service)
+  - type: pvt
+    name: n8n-service
+    region: oregon
+    runtime: docker
+    dockerCommand: n8nio/n8n # Using the image name as specified
+    plan: starter
+    ports:
+      - "5678:5678" # Default n8n port
+    envVars:
+      - key: TZ
+        value: America/New_York
+      - key: N8N_HOST
+        value: ${n8n-service.onrender.com} # n8n needs to know its public URL
+      # Add other n8n specific environment variables as needed, e.g., for database:
+      # - key: DB_TYPE
+      #   value: postgresdb
+      # - key: DB_POSTGRESDB_HOST
+      #   fromService:
+      #     name: main-db # If using the shared main-db, though a dedicated DB for n8n is better
+      #     type: psql
+      #     envVarKey: INTERNAL_HOST # Or the appropriate key for host
+      # - key: DB_POSTGRESDB_DATABASE
+      #   value: n8n_database_name
+      # - key: DB_POSTGRESDB_USER
+      #   value: n8n_user
+      # - key: DB_POSTGRESDB_PASSWORD
+      #   value: n8n_password_from_secret_or_env_group
+      # - key: N8N_BASIC_AUTH_ACTIVE
+      #   value: "true"
+      # - key: N8N_BASIC_AUTH_USER
+      #   value: "your_n8n_user"
+      # - key: N8N_BASIC_AUTH_PASSWORD
+      #   value: "your_n8n_password"
+    disk:
+      name: n8ndata
+      mountPath: /home/node/.n8n # n8n data directory
+      sizeGB: 10

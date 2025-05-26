@@ -69,7 +69,23 @@
    ├── infra/       # Terraform, Helm charts, and other infrastructure as code
    └── docs/        # Detailed specifications, architecture diagrams, and additional documentation
  ```
- 
+
+ ## Deployment
+
+ This project is configured for deployment on [Render.com](https://render.com/) using the `render.yaml` file located in the root of the repository. This file defines all the necessary services, databases, environment variables, and build configurations.
+
+ To deploy, connect your Git repository to Render and create a new "Blueprint" instance, pointing Render to the `render.yaml` file. Render will then provision and deploy all the services automatically.
+
+ ## Local Development
+
+ For local development, a `docker-compose.yml` file is provided (or will be provided) to orchestrate the services.
+
+ To start the services locally:
+ ```bash
+ docker-compose up --build -d
+ ```
+ Ensure you have Docker and Docker Compose installed. Environment variables for local development should be managed via `.env` files within each service directory, based on their respective `.env.example` files. The `docker-compose.yml` is designed to align with the `render.yaml` setup, but always refer to the specific `.env.example` files for local configuration details.
+
  ## TODO List / Roadmap
  
  - [ ] Setup the Next.js storefront in the frontend directory.

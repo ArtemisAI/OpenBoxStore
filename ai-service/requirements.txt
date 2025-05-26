@@ -1,7 +1,6 @@
  # Python dependencies for AI service
- fastapi
- uvicorn[standard]
- langchain
- openai
- chromadb
- # TODO: Pin versions and add any additional libraries
+fastapi==0.115.12
+uvicorn[standard]==0.34.2
+langchain==0.3.25
+openai==1.82.0
+chromadb==1.0.10

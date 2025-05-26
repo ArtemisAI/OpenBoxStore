@@ -8,5 +8,4 @@
  
  COPY app/ app/
  
- # TODO: Adjust command or health checks as needed
  CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]

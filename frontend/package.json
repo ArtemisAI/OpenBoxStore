@@ -9,7 +9,16 @@
      "start": "next start",
      "lint": "eslint ."
    },
-   "dependencies": {},
-   "devDependencies": {},
-   "TODO": "Add actual dependencies and devDependencies"
+   "dependencies": {
+    "next": "^15.3.2",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+   },
+   "devDependencies": {
+    "typescript": "^5.8.3",
+    "@types/react": "^19.1.5",
+    "@types/node": "^22.15.21",
+    "eslint": "^9.27.0",
+    "@types/eslint": "^9.6.1"
+   }
  }

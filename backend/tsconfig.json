@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "es2020",
+    "module": "commonjs",
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true, /* Ensure case-sensitive file naming for better cross-platform compatibility. */
+    "resolveJsonModule": true /* Allows importing JSON files */
+  },
+  "include": ["src/**/*"], /* Glob pattern to include all files in the src directory */
+  "exclude": ["node_modules", "**/*.spec.ts"] /* Exclude node_modules and test files from compilation */
+}

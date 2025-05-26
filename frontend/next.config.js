@@ -7,5 +7,4 @@
      locales: ['en', 'fr'],
      defaultLocale: 'en'
    },
-   // TODO: Add custom Next.js configuration settings as needed
  }
