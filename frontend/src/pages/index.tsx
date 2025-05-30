@@ -1,4 +1,5 @@
  import type { NextPage } from 'next'
+ import Chatbot from '@/components/Chatbot'; // Assuming Chatbot.tsx is in src/components
  
  // TODO: Implement the homepage for The Open Box marketplace
  const HomePage: NextPage = () => {
@@ -13,6 +14,10 @@
        <div>
          <h2>Shop Now</h2>
          <p>TODO: Add a button or link to browse all products.</p>
+       </div>
+       <div className="mt-8">
+         <h2 className="text-2xl font-semibold mb-4">Chat with our AI Assistant</h2>
+         <Chatbot />
        </div>
      </div>
    )

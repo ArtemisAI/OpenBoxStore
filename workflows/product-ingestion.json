@@ -1,8 +1,176 @@
 {
   "name": "Product Ingestion",
-  "nodes": [],
-  "connections": {},
+  "nodes": [
+    {
+      "parameters": {},
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        250,
+        100
+      ],
+      "id": "0f7f0b8f-f9df-4a3c-a7a4-c9a9a8a0b5c1"
+    },
+    {
+      "parameters": {
+        "values": {
+          "json": [
+            {
+              "name": "products",
+              "value": "[{\"title\":\"Awesome T-Shirt\",\"description\":\"Comfortable cotton t-shirt\",\"sku\":\"TSHIRT001\",\"variants\":[{\"title\":\"Small\",\"prices\":[{\"currency_code\":\"usd\",\"amount\":2000}]}]},{\"title\":\"Cool Mug\",\"description\":\"Ceramic coffee mug\",\"sku\":\"MUG002\",\"variants\":[{\"title\":\"Standard\",\"prices\":[{\"currency_code\":\"usd\",\"amount\":1500}]}]}]"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Set Example Product Data",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ],
+      "id": "a1b2c3d4-e5f6-7890-1234-567890abcdef"
+    },
+    {
+      "parameters": {
+        "batchSize": 1,
+        "options": {}
+      },
+      "name": "Loop Through Products",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 1,
+      "position": [
+        250,
+        500
+      ],
+      "id": "b2c3d4e5-f6a7-8901-2345-678901bcdefa"
+    },
+    {
+      "parameters": {
+        "url": "{{ $process.env.MEDUSA_ADMIN_API_URL }}/admin/products",
+        "method": "POST",
+        "authentication": "headerAuth",
+        "headerAuth": {
+          "name": "Authorization",
+          "value": "Bearer {{ $process.env.MEDUSA_ADMIN_API_KEY }}"
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "title",
+              "value": "{{ $json.title }}"
+            },
+            {
+              "name": "subtitle",
+              "value": "{{ $json.sku }}"
+            },
+            {
+              "name": "description",
+              "value": "{{ $json.description }}"
+            },
+            {
+              "name": "is_giftcard",
+              "value": false
+            },
+            {
+              "name": "discountable",
+              "value": true
+            },
+            {
+              "name": "status",
+              "value": "published"
+            },
+            {
+              "name": "variants",
+              "value": "{{ $json.variants }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Create Product in Medusa",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [
+        250,
+        700
+      ],
+      "id": "c3d4e5f6-a7b8-9012-3456-789012cdefab"
+    },
+    {
+      "parameters": {},
+      "name": "Log Creation Result",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        250,
+        900
+      ],
+      "id": "d4e5f6a7-b8c9-0123-4567-890123defabc"
+    }
+  ],
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Set Example Product Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Example Product Data": {
+      "main": [
+        [
+          {
+            "node": "Loop Through Products",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Through Products": {
+      "main": [
+        [
+          {
+            "node": "Create Product in Medusa",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Product in Medusa": {
+      "main": [
+        [
+          {
+            "node": "Log Creation Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
   "active": false,
   "settings": {},
-  "id": "1"
+  "id": "product_ingestion_workflow_1",
+  "meta": {
+    "templateCredsSetupCompleted": true
+  }
 }
